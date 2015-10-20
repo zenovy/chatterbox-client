@@ -4,7 +4,24 @@ app.init = function() {
   $('#chats').append("<div id='roomSelect'></div>");
   app.fetch();
 
+  $('#send').submit(app.handleSubmit);
+  $('#message').on('keypress', function() {
+    if (event.which === 13) {
+      app.handleSubmit;
+    }
+  });
+  
+  setInterval(app.fetch, 2000);
 };
+
+app.handleSubmit = function(e) {
+  e.preventDefault();
+  var message = $('#message').val();
+  $('#message').val("");
+  app.send({text: message,username:window.location.search.split('=')[1]});
+  app.fetch();
+}
+
 app.server = "https://api.parse.com/1/classes/chatterbox";
 app.send = function(message) {
   $.ajax({
@@ -21,7 +38,7 @@ app.send = function(message) {
       console.error('chatterbox: Failed to send message');
     }
   });
-}
+};
 var dataArr;
 app.fetch = function() {
   $.ajax({
@@ -59,7 +76,6 @@ app.clearMessages = function() {
   // app.send({
   //   username: '???',
   //   text: 'Breathing Space'
-
   // });
   // app.fetch();
   $('#chats').html('');
@@ -70,7 +86,7 @@ app.addMessage = function(message, postNum) {
   //uses .text to set container contents, since it will not be parsed as HTML
   //this is done to prevent script injection
   $('#'+postNum).text(message.text);
-  $('#'+postNum).prepend('<span></span>').text(message.username + ': ');
+  $('#'+postNum).prepend('<span></span>').find('span').text(message.username + ': ');
   $('#'+postNum).addClass(message.username);
   $('#'+postNum).addClass('username');
   $('#'+postNum).on('click',function() {
@@ -90,8 +106,9 @@ app.addRoom = function(room) {
 }
 
 app.addFriend = function(user) {
-
+  
 }
+
 
 $(function(){app.init()});
 
