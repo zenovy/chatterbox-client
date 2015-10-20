@@ -1,4 +1,5 @@
 var app = {};
+var rooms = {};
 app.init = function() {
   //initialize with all messages
   $('#chats').append("<div id='roomSelect'></div>");
@@ -10,15 +11,28 @@ app.init = function() {
       app.handleSubmit;
     }
   });
+
+  $('#addRoom').on('click', function() {
+    console.log($('#room').val())
+    if (rooms[$('#room').val()] === undefined) {
+      $('select').append('<option>'+ $('#room').val() +'</option>');
+      rooms[$('#room').val()] = true;
+      console.log($('#room').val())
+    }
+  });
+
+  $('#dropdown').on('change', function() {
+    app.fetch();
+  })
   
-  setInterval(app.fetch, 2000);
+  //setInterval(app.fetch, 2000);
 };
 
 app.handleSubmit = function(e) {
   e.preventDefault();
   var message = $('#message').val();
   $('#message').val("");
-  app.send({text: message,username:window.location.search.split('=')[1]});
+  app.send({text: message,username:window.location.search.split('=')[1],room:$('#room').val()});
   app.fetch();
 }
 
@@ -48,6 +62,7 @@ app.fetch = function() {
     contentType: 'application/json',
     success: function (data) {
       console.log('chatterbox: Message received');
+      app.clearMessages();
       //data is an object with one property: the results array, named 'results'
       dataArr = data.results;
       for (var i = 0; i < dataArr.length; i++) {
@@ -61,41 +76,37 @@ app.fetch = function() {
   });
 }
 app.clearMessages = function() {
-  // var ids = _.pluck(dataArr, 'objectId');
-  // for (var i = 0; i < ids.length; i++) {
-  //   $.ajax({
-  //     // This is the url you should use to communicate with the parse API server.
-  //     url: app.server + '/' + ids[i],
-  //     type: 'DELETE',
-  //     contentType: 'application/json',
-  //     success: function (data) {
-  //       console.log('Deleted message with ID: ' + ids[i]) + 'and message' + dataArr[i].text)
-  //     }
-  //   });
-  // }
-  // app.send({
-  //   username: '???',
-  //   text: 'Breathing Space'
-  // });
-  // app.fetch();
   $('#chats').html('');
 }
+
+
+
 app.addMessage = function(message, postNum) {
   //uses .append to create the container
-  $('#chats').append("<div id='" + postNum + "'></div>");
-  //uses .text to set container contents, since it will not be parsed as HTML
-  //this is done to prevent script injection
-  $('#'+postNum).text(message.text);
-  $('#'+postNum).prepend('<span></span>').find('span').text(message.username + ': ');
-  $('#'+postNum).addClass(message.username);
-  $('#'+postNum).addClass('username');
-  $('#'+postNum).on('click',function() {
-    console.log($(this))
-    app.addFriend($(this).attr('class'))
-  });
+  if (typeof message.username === 'undefined' || message.username === '' || message.text === '') return;
+  if ($('#dropdown').val() === 'Global Chat' || message.room === $('#dropdown').val()) {
+    $('#chats').append("<div id='" + postNum + "'></div>");
+    //uses .text to set container contents, since it will not be parsed as HTML
+    //this is done to prevent script injection
+    $('#'+postNum).text(message.text);
+    $('#'+postNum).prepend('<span></span>').find('span').text(message.username + ': ');
+    $('#'+postNum).find('span').addClass(message.username);
+    $('#'+postNum).find('span').addClass('username');
+
+    //adds rooms to dropdown
+    if (rooms[message.room] === undefined) {
+      $('#dropdown').append('<option>'+message.room+'</option>');
+      rooms[message.room] = true;
+    }
+
+    $('span').on('click',function() {
+      var username = $(this).text().slice(0,-2);
+      $('.'+username).closest('div').addClass('friend');
+    });
+  }
 }
 
-var roomNum = 0;
+
 app.addRoom = function(room) {
   //uses .append to create the container
   $('#roomSelect').append("<div id='" + roomNum++ + "'></div>");
@@ -106,7 +117,7 @@ app.addRoom = function(room) {
 }
 
 app.addFriend = function(user) {
-  
+
 }
 
 

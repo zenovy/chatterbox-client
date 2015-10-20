@@ -59,19 +59,22 @@ form input[type=text] {
     padding: 5px;
 }
 
-.chat {
-    padding: 5px;
+#chats {
     margin-bottom: 5px;
-    background-color: #eee;
 }
 
-.chat .username {
+#chats .username {
     font-weight: 800;
 }
-
-.chat:hover {
-    background-color: #ddd;
+#chats div {
+  background-color: #eee;
+  margin: 5px 0 5px 0;
+  border: solid green 1px;
 }
+
+/*#chats:hover {
+    background-color: #ddd;
+}*/
 
 .spinner {
     float: right;
@@ -81,4 +84,8 @@ form input[type=text] {
 
 .spinner img {
     padding: 10px;
+}
+
+.friend {
+    font-weight: bold;
 }

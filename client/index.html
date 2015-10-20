@@ -16,9 +16,15 @@
     <div id="main">
       <h1>chatterbox</h1>
       <form id="send">
-        <input id="message" placeholder="Type here" action="app.handleSubmit()">
+        <input id="message" placeholder="Type here">
         <button name="post">Post</button>
       </form>
+      <div>
+      <select id="dropdown">
+        <option>Global Chat</option>
+      </select>
+      </div>
+      <input id="room"><button name="addRoom" id='addRoom'>Add Room</button>
       <!-- Your HTML goes here! -->
     </div>
     <div id="chats"></div>
